@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather app</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      body {
+        background-color: aqua;
+      }
+      .container {
+        width: 1320px;
+        margin: auto;
+      }
+      .title {
+        padding-top: 50px;
+        padding-bottom: 20px;
+        padding-left: 25px;
+        font-size: 50px;
+        color: rgb(255, 183, 0);
+      }
+      .container form {
+        display: flex;
+      }
+      form input {
+        flex-basis: 300px;
+        height: 40px;
+        margin-left: 25px;
+        padding: 0px 8px;
+      }
+      form button {
+        flex-basis: 100px;
+        padding: 10px 15px;
+        font-size: 18px;
+      }
+      .mainRes {
+        width: 350px;
+        background-color: white;
+        margin: 20px 0;
+        padding: 20px 20px;
+        margin-left: 25px;
+      }
+      .mainRes h4 {
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Weather App</h1>
+      <form action="">
+        <input type="text" placeholder="Enter city name" name="cityName" />
+        <button>Submit</button>
+      </form>
+      <div class="mainRes" id="weatherCard"></div>
+    </div>
+  </body>
+  <script>
+    let form = document.querySelector("form");
+    let card = document.querySelector("#weatherCard");
+    let input = document.querySelector("input");
+    card.style.display = "none";
+
+    form.addEventListener("submit", async (e) => {
+      let cityName = e.target.cityName.value;
+      // console.log(cityName);
+      e.preventDefault();
+
+      let fetchData = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=4d8fb5b93d4af21d66a2948710284366&units=metric`
+      );
+      let finalres = await fetchData.json();
+      console.log(finalres);
+      card.style.display = "block";
+      if (finalres.cod == "404" || finalres.cod == "400") {
+        card.innerHTML = "Please check city name again! ";
+      } else {
+        let { name, main, sys, weather } = finalres;
+        card.innerHTML = `
+      <h4>${name} <mark>${sys.country}</mark></h4>
+      <h1>${main.temp}</h1>
+      <img src="https://api.openweathermap.org/img/w/${weather[0].icon}.png" alt="" />
+      <p>${weather[0].description}</p>
+      `;
+        input.value = "";
+      }
+    });
+  </script>
+</html>
